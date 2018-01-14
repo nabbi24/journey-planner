@@ -1,0 +1,26 @@
+<div class="maincontent">
+  <div class="text-align_center_on_big_screen">
+    <form id="login_frm" action="/" method="post">
+      <div>
+        <input name="uid" type="text" value="<%= @uid %>" placeholder="Your ID" required></input>
+        <input id="passwd" type="password" placeholder="Password" required></input>
+        <input id="encrypted_passwd" name="passwd" type="hidden"></input>
+        <button id="login_btn" class="button">Login</button>
+      </div>
+    </form>
+    <br>
+    <span>If you don't have an account,<br><a href="/signin/">Sign-in</a>, plz.</span>
+  </div>
+  <hr> 
+</div>
+
+<script>
+  $(function(){
+    $('#menu_icons').remove();
+    $('.mobile_helper').remove();
+
+    $('#login_btn').on('click', function(e) {
+      $('#encrypted_passwd').val(encryptPasswd($('#passwd').val()));
+    });
+  });
+</script>

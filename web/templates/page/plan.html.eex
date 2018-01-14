@@ -1,0 +1,14 @@
+<div class="maincontent">
+  <div>
+    <h3>Plan</h3>
+    <p><%= @uid %>, you can arrange it! (some day)</p>
+  </div>
+  <br>
+
+  <input name="plan_name"></input>
+  <input name="detail"></input>
+</div>
+<script>
+  $(function() {
+  });
+</script>

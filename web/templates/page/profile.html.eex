@@ -1,0 +1,8 @@
+<div class="maincontent">
+  個人情報の取扱いに注意すること。
+  収集する情報を吟味して、機能拡張に活用する。
+</div>
+<script>
+  $(function() {
+  });
+</script>

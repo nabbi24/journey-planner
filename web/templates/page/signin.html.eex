@@ -1,0 +1,77 @@
+<div class="maincontent">
+  <a href="/">return</img></a>
+  <br><br>
+  <form id="signup_frm" action="/signin" method="post">
+    <div class="row">
+      <span class="col span_2">User ID</span>
+      <input name="uid" class="col span_3" type="text" placeholder="Your ID" required></input>
+    </div>
+    <br>
+    <div class="row">
+      <span class="col span_2">Your Name</span>
+      <input name="gvn_name" class="col span_4" type="text" placeholder="Given Name" required></input>
+      <input name="mdl_name" class="col span_4" type="text" placeholder="Middle Name"></input>
+      <input name="fml_name" class="col span_4" type="text" placeholder="Family Name"></input>
+    </div>
+    <br>
+    <div class="row">
+      <span class="col span_2">Birthday</span>
+      <input id="birth_date" name="birth_date" class="col span_3" type="text" placeholder="Birthday"></input>
+    </div>
+    <br>
+    <div class="row">
+      <span class="col span_2">Your interests</span>
+      <div class="col span_14">
+        <label><input name="interested_african" type="checkbox">African</label>
+        <label><input name="interested_american" type="checkbox">American</label>
+        <label><input name="interested_arabic" type="checkbox">Arabic</label>
+        <label><input name="interested_asian" type="checkbox">Asian</label>
+        <label><input name="interested_european" type="checkbox">European</label>
+        <label><input name="interested_latin" type="checkbox">Latin</label>
+      </div>
+    </div>
+    <br>
+    <div class="row">
+      <span class="col span_2">E-mail</span>
+      <input id="mail" name="mail" class="col span_8" type="text" placeholder="Mail Address"></input>
+    </div>
+    <br>
+    <div class="row">
+      <span class="col span_2">Password</span>
+      <input id="passwd" class="col span_3" type="password" placeholder="Password" required></input>
+      <input id="encrypted_passwd" name="passwd" type="hidden"></input>
+      <input id="confirmed_passwd" class="col span_3" type="password" placeholder="Confirm Password" required></input>
+    </div>
+    <div class="text-align_right">
+      <i>Come on. Join us and enjoy your journey!</i>
+    </div>
+    <div class="row text-align_right">
+      <button id="signup_btn" class="button">Create Account</button>
+    </div>
+  </form>
+</div>
+
+<link rel="stylesheet" type="text/css" href="/css/jquery_datetimepicker/jquery.datetimepicker.css"/ >
+<script src="/js/jquery_datetimepicker/jquery.datetimepicker.js"></script>
+
+<script>
+  $(function() {
+    $('#menu_icons').remove();
+    
+    $("#birth_date").datetimepicker({timepicker:false, format:'Y/m/d'});
+
+    $('#signup_btn').on('click', function(e) {
+      e.preventDefault();
+      
+      var raw_passwd = $('#passwd').val();
+      if (raw_passwd == $('#confirmed_passwd').val()) {
+        $('#encrypted_passwd').val(encryptPasswd(raw_passwd));
+        $('#signup_frm').submit();
+      } else {
+        showError('Passwords do not match.');
+      }
+
+      return false;
+    });
+  });
+</script>

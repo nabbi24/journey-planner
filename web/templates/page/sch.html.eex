@@ -1,0 +1,106 @@
+<div class="maincontent">
+  <div>
+    <h3>Schedule</h3>
+    <p><%= @uid %>, you can arrange it! (some day)</p>
+  </div>
+  <br>
+
+  <div>
+    <input placeholder="Which plan?"></input>
+    <span id="planDetail"></span>
+    <button class="button">Search</button>
+    <!-- TODO plan_no -->
+    <input id="plan_no" name="plan_no" type="hidden" value="1"></input>
+  </div>
+  <div class="row">
+    <span class="col span_2">Start</span>
+    <span class="col span_2">End</span>
+    <span class="col span_3">Place Name</span>
+    <span class="col span_6">Detail</span>
+    <span class="col span_1">#</span>
+  </div>
+    <hr>
+  <div id="sortable">
+    <%= for x <- @sch do %>
+    <div class="row">
+      <p class="col span_1">
+        <span><%= x.sch_no %>-></span>
+        <span name="sch_no"><%= x.sch_no %></span>
+      </p>
+      <!-- TODO <input type="checkbox" class="col span_1"></input> -->
+      <input name="start_ts" type="text" class="col span_2" value="<%= x.start_ts.year %>/<%= x.start_ts.month %>/<%= x.start_ts.day %> <%= x.start_ts.hour %>:<%= x.start_ts.min %>"></input>
+      <input name="end_ts" type="text" class="col span_2" value="<%= x.end_ts.year %>/<%= x.end_ts.month %>/<%= x.end_ts.day %> <%= x.end_ts.hour %>:<%= x.end_ts.min %>"></input>
+      <input name="place_name" type="text" class="col span_3" value="<%= x.place_name %>"></input>
+      <input name="detail" type="text" class="col span_6" value="<%= x.detail %>"></input>
+      <button class="button col span_1" onclick="del_sch_handler($(this).closest('.row'));">delete</button>
+      <input name="uid" type="hidden" value="<%= x.uid %>"></input>
+      <input name="sch_no" type="hidden" value="<%= x.sch_no %>"></input>
+      <input name="lat" type="hidden" value="<%= x.lat %>"></input>
+      <input name="lng" type="hidden" value="<%= x.lng %>"></input>
+    </div>
+    <%= end %> 
+  </div>
+      <button class="button col span_1" onclick="upd_sch_handler($(this).closest('.row'));">change</button>
+</div>
+
+<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/jquery-ui.min.js"></script>
+<script src="/js/jquery.ui.touch-punch/jquery.ui.touch-punch.min.js"></script>
+
+<link rel="stylesheet" type="text/css" href="/css/jquery_datetimepicker/jquery.datetimepicker.css"/ >
+<script src="/js/jquery_datetimepicker/jquery.datetimepicker.js"></script>
+
+<script>
+  $(function() {
+    $('input[name=start_ts], input[name=end_ts]').datetimepicker({format:'Y/m/d H:i'});
+
+    $('#sortable').sortable({stop: function() {
+      //TODO
+    }});
+    $('#sortable').selectable();
+  });
+
+  function upd_sch_handler(tr) {
+    upd_sch('/sch', $('#plan_no').val(), tr.children('[name=sch_no]').val(), tr.children('[name=lat]').val(), tr.children('[name=lng]').val(), tr.children('[name=start_ts]').val(), tr.children('[name=end_ts]').val(), tr.children('[name=place_name]').val(), tr.children('[name=detail]').val());
+  }
+
+  function del_sch_handler(tr) {
+    del_sch('/sch', $('#plan_no').val(), tr.children('[name=sch_no]').val());
+  }
+
+  function upd_sch(page, plan_no, sch_no, lat, lng, start_ts, end_ts, place_name, detail){
+    $.ajax({
+      type: 'post',
+      url: page + '/upd',
+      data: 'plan_no=' + plan_no + '&sch_no=' + sch_no + '&lat=' + lat + '&lng=' + lng + '&start_ts=' + start_ts + '&end_ts=' + end_ts + '&place_name=' + place_name + '&detail=' + detail,
+      success: function(msg){
+        showInfo('Update was successful.');
+      },
+      error: function(){
+        showError('Failed to update.');
+      },
+      complete: function(){
+      }
+    });
+
+    return false;
+  }
+
+  function del_sch(page, plan_no, sch_no){
+    $.ajax({
+      type: 'post',
+      url: page + '/del',
+      data: 'plan_no=' + plan_no + '&sch_no=' + sch_no,
+      success: function(msg){
+        showInfo('Delete was successful.');
+        tr.remove();
+      },
+      error: function(){
+        showError('Failed to delete.');
+      },
+      complete: function(){
+      }
+    });
+
+    return false;
+  }
+</script>

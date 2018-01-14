@@ -1,0 +1,19 @@
+<div class="maincontent">
+  <p>
+    <%= if @gvn_name != nil do "Welcome, " <> @gvn_name <> "." end %>
+  </p>
+  <br>
+  <div class="row">
+    <h4 class="col span_3" style="color:#d82">Hello. How are you?</h4>
+    <span class="col span_10">
+      <a class="twitter-timeline"  href="https://twitter.com/search?q=travel%20OR%20viajes%20OR%20%E6%97%85%E8%A1%8C%20OR%20%D8%B1%D8%AD%D9%84%D8%A9" data-widget-id="544139970970017795">travel OR viajes OR 旅行 OR رحلةに関するツイート</a>
+    </span>
+    <h4 class="col span_3" style="color:#44f;">We hope you are fine.</h4>
+  </div>
+</div>
+
+<script>
+  $(function() {
+    !function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");
+  });
+</script>

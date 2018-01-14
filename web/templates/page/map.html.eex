@@ -1,0 +1,163 @@
+<div class="maincontent">
+  <div>
+    <h3>Map</h3>
+    <p><%= @uid %>, you can choose it! (not so far)</p>
+  </div>
+  <br>
+
+  <div class="row">
+    <input type="text" id="addr" name="addr" placeholder="Input address"></input>
+    <button id="search_addr_btn" class="button">Search Address</button>
+    <div id="results"></div>
+  </div>
+  <br>
+
+  <div id="map" class="row" style="height:320px;"></div>
+
+  <br>
+  <form id="add_sch_frm" action="/map" method="post"> 
+    <div class="row">
+      <span class="col span_2">Latitude (緯度)</span>
+      <input id="lat" name="lat" class="col span_3" readonly></input>
+      <span class="col span_2">Longitude (経度)</span>
+      <input id="lng" name="lng" class="col span_3" readonly></input>
+    </div>
+    <div class="row">
+      <span class="col span_2">Schedule Start</span>
+      <input id="start_ts" name="start_ts" class="col span_3" required></input>
+      <span class="col span_2">Schedule End</span>
+      <input id="end_ts" name="end_ts" class="col span_3" required></input>
+    </div>
+    <div class="row">
+      <span class="col span_2">Place Name</span>
+      <input name="place_name" class="col span_8" placeholder="Place, spot, mall, so on" required></input>
+    </div>
+    <div class="row">
+      <span class="col span_2">Detail</span>
+      <input name="detail" class="col span_14" placeholder="Imagine a bright future" required></input>
+    </div>
+    <div class="row text-align_right">
+      <!-- TODO plan_no -->
+      <input name="plan_no" type="hidden" value="1"></input>
+      <!-- TODO ajax -->
+      <button id="add_sch_btn" class="button">Add Schedule</button>
+    </div>
+  </form>
+</div>
+
+<link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css" />
+<link rel="stylesheet" href="/css/leaflet-routing-machine_1.1.0/leaflet-routing-machine.css" />
+<script src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
+<script src="/js/leaflet-routing-machine_1.1.0/leaflet-routing-machine.min.js"></script>
+
+<link rel="stylesheet" type="text/css" href="/css/jquery_datetimepicker/jquery.datetimepicker.css"/ >
+<script src="/js/jquery_datetimepicker/jquery.datetimepicker.js"></script>
+    
+<script type="text/javascript">
+  var map;
+
+  $(function() {
+    initMap();
+
+    //TODO standardize with class : date, time, datetime patterns
+    $('#search_addr_btn').on('click', searchAddr);
+    $('#start_ts, #end_ts').datetimepicker({format:'Y/m/d H:i'});
+    
+    $('#add_sch_btn').on('click', function(e){
+      e.preventDefault();
+      
+      if ($('#start_ts').val() <= $('#end_ts').val()) {
+        $('#add_sch_frm').submit();
+      } else {
+        $('#start_ts').focus();
+        showError('Schedule Start must be after the End.');
+      }
+
+      return false;
+    });
+  });
+
+  function initMap(){
+    // 位置とズームを決めてマップを描画
+    //TODO init
+    var init_lat = 34.7;
+    var init_lng = 135.5;
+    changeLatLng(init_lat, init_lng);
+
+    map = L.map('map',{
+      center:[init_lat, init_lng],
+      zoom: 12,
+      doubleClickZoom: false
+    });
+
+    // OpenStreetMapを使う
+    var tileLayer = L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+      attribution : '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+    });
+    tileLayer.addTo(map);
+
+    // 経路を置く
+    L.Routing.control({
+      waypoints: [
+      <%= for x <- @sch do %>
+        L.latLng(<%= x.lat %>, <%= x.lng %>),
+      <%= end %>
+      ]
+    }).addTo(map);
+
+    map.on('click', function(e) {
+      changeLatLng(e.latlng.lat, e.latlng.lng);
+    });
+
+    map.on('dblclick', function(e) {
+      var newMapMarker = L.marker([e.latlng.lat, e.latlng.lng, {draggable: true}])
+                           .addTo(markers)
+                           .on('popupclose', function(e){map.removeLayer(newMapMarker);})
+                           .bindPopup('<button class="button" onclick="alert(\'Hello, world.\');">Delete</button>')
+                           .openPopup();
+    });
+  }
+  
+  function changeLatLng(lat, lng) {
+    $('#lat').val(lat);
+    $('#lng').val(lng);
+  }
+
+  function searchAddr() {
+    var inp = document.getElementById('addr');
+
+    $.getJSON('http://nominatim.openstreetmap.org/search?format=json&limit=5&q=' + inp.value, function(data) {
+      var items = [];
+
+      $.each(data, function(key, val) {
+        items.push(
+          "<li><a href='#' onclick='chooseAddr(" +
+          val.lat + ", " + val.lon + ");changeLatLng("+ val.lat + "," + val.lon + ");return false;'>" + val.display_name +
+          '</a></li>'
+          );
+        });
+      $('#results').empty();
+      if (items.length != 0) {
+        $('<p>', { html: 'Search results:' }).appendTo('#results');
+        $('<ul/>', {
+          'class': 'my-new-list',
+          html: items.join('')
+          }).appendTo('#results');
+      } else {
+        $('<p>', { html: 'No results found' }).appendTo('#results');
+      }
+    });
+  }
+
+  function chooseAddr(lat, lng, type) {
+    var location = new L.LatLng(lat, lng);
+
+    map.panTo(location);
+
+    if (type == 'city' || type == 'administrative') {
+      map.setZoom(11);
+    } else {
+      map.setZoom(13);
+    }
+  }
+</script>

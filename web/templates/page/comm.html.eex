@@ -1,0 +1,9 @@
+<div class="maincontent">
+  <input id="in" type="text"></input>
+  <input id="out" type="text"></input>
+  <button id="translate_btn" class="button">Translate</button>
+</div>
+<script>
+  $(function() {
+  });
+</script>
